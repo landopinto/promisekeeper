@@ -27,7 +27,7 @@ import { BadgeChip } from "@/components/BadgeChip";
 import { Nav } from "@/components/Nav";
 
 function genId(): string {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return crypto.randomUUID();
 }
 
 export default function Home() {
@@ -155,8 +155,13 @@ export default function Home() {
       createdAt: new Date().toISOString(),
       status: "active",
     };
-    await savePromise(p);
-    reload();
+    try {
+      await savePromise(p);
+      reload();
+    } catch (err) {
+      console.error("Failed to save promise:", err);
+      alert("Couldn't save — " + (err instanceof Error ? err.message : "unknown error"));
+    }
   }
 
   async function handleSaveEdit(id: string, updates: EditData) {
